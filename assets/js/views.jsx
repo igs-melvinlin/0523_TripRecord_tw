@@ -197,6 +197,14 @@ function MainTimeline({ trip, currentDay, query, filters, onOpen, onReorder, onA
 
   return (
     <div className="main">
+      <div className="day-tabs-mobile">
+        {trip.days.map((d, i) => (
+          <div key={i} className={"pill "+(currentDay===i?"active":"")} onClick={()=>{ /* host App will pass setCurrentDay via prop */ window.dispatchEvent(new CustomEvent("tripbook:setDay", {detail:i})); }}>
+            <span className="d">{(d.label || ("Day "+(i+1))).replace(/^Day\s+/i,"D")}</span>
+            <span>{fmtDate(d.date).replace(/\s*星期./,"")}</span>
+          </div>
+        ))}
+      </div>
       <div className="day-header">
         <div>
           <h2 className="serif">{day.label}<span style={{color:"var(--muted)", marginLeft: 14}}>·</span> <span style={{color:"var(--ink-2)", fontSize: 26}}>{fmtDate(day.date)}</span></h2>

@@ -19,6 +19,13 @@ function App() {
 
   // UI 狀態
   const [currentDay, setCurrentDay] = useState(0);
+
+  // 接收行動裝置 Day 切換事件
+  useEffect(() => {
+    const handler = (e) => setCurrentDay(e.detail);
+    window.addEventListener("tripbook:setDay", handler);
+    return () => window.removeEventListener("tripbook:setDay", handler);
+  }, []);
   const [query, setQuery] = useState("");
   const [filters, setFilters] = useState([]);
   const [activeSpot, setActiveSpot] = useState(null);
