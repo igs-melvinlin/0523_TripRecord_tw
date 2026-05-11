@@ -30,9 +30,6 @@ function Topbar({ trip, query, setQuery, onShare, onImport, onToggleMode, mode, 
         <button className="ctl" onClick={onShare}>
           <I.share /><span className="lbl">分享</span>
         </button>
-        <button className="ctl primary" onClick={onAdd}>
-          <I.plus /><span className="lbl">新增景點</span>
-        </button>
       </div>
     </div>
   );
@@ -117,11 +114,7 @@ function TimelineCard({ spot, onOpen, onDragStart, onDragOver, onDrop, dragging,
   const meta = window.CATEGORY_META[spot.category] || { token: "muted" };
   return (
     <div
-      className={"tcard "+(dragging?"dragging":"")+(dragOver?" drag-over":"")}
-      draggable
-      onDragStart={onDragStart}
-      onDragOver={(e) => { e.preventDefault(); onDragOver(); }}
-      onDrop={onDrop}
+      className="tcard"
       onClick={() => onOpen(spot)}
     >
       <div className="time mono">
@@ -159,16 +152,13 @@ function TimelineCard({ spot, onOpen, onDragStart, onDragOver, onDrop, dragging,
           </div>
         </div>
       </div>
-      <div className="drag-handle"><I.drag /></div>
     </div>
   );
 }
 
 // ============== 中欄：當日時間軸 ==============
-function MainTimeline({ trip, currentDay, query, filters, onOpen, onReorder, onAdd }) {
+function MainTimeline({ trip, currentDay, query, filters, onOpen }) {
   const day = trip.days[currentDay];
-  const [dragId, setDragId] = useState(null);
-  const [overId, setOverId] = useState(null);
 
   if (!day) {
     return (
@@ -176,11 +166,8 @@ function MainTimeline({ trip, currentDay, query, filters, onOpen, onReorder, onA
         <div className="day-header">
           <div>
             <h2 className="serif">沒有行程</h2>
-            <div className="date">點右上「＋ 新增景點」開始規劃</div>
+            <div className="date">尚未載入資料</div>
           </div>
-        </div>
-        <div className="timeline">
-          <div className="empty" onClick={onAdd} style={{cursor:"pointer"}}>＋ 新增第一個景點</div>
         </div>
       </div>
     );
@@ -219,28 +206,13 @@ function MainTimeline({ trip, currentDay, query, filters, onOpen, onReorder, onA
 
       <div className="timeline">
         {visible.map((s) => (
-          <TimelineCard
-            key={s.id}
-            spot={s}
-            onOpen={onOpen}
-            dragging={dragId === s.id}
-            dragOver={overId === s.id && dragId && dragId !== s.id}
-            onDragStart={() => setDragId(s.id)}
-            onDragOver={() => setOverId(s.id)}
-            onDrop={() => {
-              if (dragId && overId && dragId !== overId) onReorder(dragId, overId);
-              setDragId(null); setOverId(null);
-            }}
-          />
+          <TimelineCard key={s.id} spot={s} onOpen={onOpen} />
         ))}
         {visible.length === 0 && (
           <div style={{padding: "40px 20px", textAlign: "center", color: "var(--muted)", border: "1px dashed var(--line)", borderRadius: 14}}>
-            這一天還沒有行程，點下方新增一個吧！
+            這一天還沒有行程。
           </div>
         )}
-        <div className="add-row">
-          <button className="add-btn" onClick={onAdd}><I.plus cls="icon-sm" /> 新增景點</button>
-        </div>
       </div>
     </div>
   );
@@ -344,7 +316,6 @@ function Drawer({ spot, onClose, onEdit, onDelete }) {
                     <I.pin cls="icon-sm" /> Google Maps
                   </a>
                 )}
-                <button className="ctl" onClick={onEdit}><I.edit cls="icon-sm" /> 編輯</button>
                 <button className="ctl" onClick={onDelete}><I.trash cls="icon-sm" /> 刪除</button>
               </div>
             </div>
