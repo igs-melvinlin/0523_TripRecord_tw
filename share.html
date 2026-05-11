@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>花蓮週末小旅行 · 分享版</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+TC:wght@300;400;500;600;700&family=Noto+Serif+TC:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+  <div id="root"></div>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+  <script src="assets/js/data.js"></script>
+  <script type="text/babel" src="assets/js/components.jsx"></script>
+  <script type="text/babel">
+    const { useState, useEffect, useMemo } = React;
+
+    function ShareApp() {
+      const trip = useMemo(() => {
+        let base = window.DEFAULT_TRIP;
+        try {
+          const raw = localStorage.getItem("tripbook.trip");
+          if (raw) base = JSON.parse(raw);
+        } catch (e) {}
+        const days = window.buildDays(base);
+        return { ...base, days, startDate: days[0]?.date, endDate: days[days.length-1]?.date };
+      }, []);
+      const theme = localStorage.getItem("tripbook.theme") || "sunrise";
+      const mode  = localStorage.getItem("tripbook.mode")  || "light";
+
+      useEffect(() => {
+        document.documentElement.setAttribute("data-theme", theme);
+        document.documentElement.setAttribute("data-mode", mode);
+      }, [theme, mode]);
+
+      const totalCost = trip.spots.reduce((s, x) => s + (x.cost || 0), 0);
+      const totalMins = trip.spots.reduce((s, x) => s + (x.duration || 0), 0);
+
+      return (
+        <div className="standalone">
+          <a className="standalone-back" href="index.html">← 回到行程編輯</a>
+
+          <div className="share-hero">
+            <PhotoPlaceholder hint="hualien · pacific · cover photo" />
+            <div className="sub">{fmtDate(trip.startDate)} — {fmtDate(trip.endDate)} · {trip.members.join(" · ")}</div>
+            <h1>{trip.title}</h1>
+          </div>
+
+          <div className="share-meta">
+            <div>
+              <div className="k">天數</div>
+              <span className="serif">{trip.days.length}<span style={{fontSize:14, color:"var(--muted)", marginLeft:4}}>天</span></span>
+            </div>
+            <div>
+              <div className="k">景點</div>
+              <span className="serif">{trip.spots.length}</span>
+            </div>
+            <div>
+              <div className="k">時長</div>
+              <span className="serif">{Math.round(totalMins/60)}<span style={{fontSize:14, color:"var(--muted)", marginLeft:4}}>小時</span></span>
+            </div>
+            <div>
+              <div className="k">預算</div>
+              <span className="serif mono">${(totalCost/1000).toFixed(1)}k</span>
+            </div>
+          </div>
+
+          {trip.days.map((day, di) => {
+            const spots = trip.spots.filter(s => s.date === day.date);
+            return (
+              <section key={di}>
+                <h2 className="share-day"><span className="num serif">{di+1}</span>{day.label} · {fmtDate(day.date)}</h2>
+                {spots.map((s) => (
+                  <a key={s.id} className="share-spot" href={`detail.html?id=${encodeURIComponent(s.id)}`}>
+                    <div className="ts">
+                      {s.time}
+                      <div className="dur">{fmtDur(s.duration)}</div>
+                    </div>
+                    <div>
+                      <div style={{marginBottom: 6}}><CategoryChip category={s.category} /></div>
+                      <h3>{s.title}</h3>
+                      <div className="addr"><I.pin cls="icon-sm" /> {s.address}</div>
+                      {s.notes && <div className="nt">{s.notes}</div>}
+                    </div>
+                  </a>
+                ))}
+              </section>
+            );
+          })}
+
+          <div style={{marginTop: 60, paddingTop: 24, borderTop:"1px solid var(--line)", textAlign:"center", color:"var(--muted)", fontSize:12}}>
+            由 TripBook 製作 · 想做自己的行程？回到 <a href="index.html" style={{color:"var(--accent)"}}>編輯主畫面</a>
+          </div>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<ShareApp />);
+  </script>
+</body>
+</html>
