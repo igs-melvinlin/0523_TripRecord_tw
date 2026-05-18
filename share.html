@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>花蓮週末小旅行 · 分享版</title>
+  <title>TripBook · 分享版</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+TC:wght@300;400;500;600;700&family=Noto+Serif+TC:wght@400;600&display=swap" rel="stylesheet">
@@ -36,7 +36,8 @@
       useEffect(() => {
         document.documentElement.setAttribute("data-theme", theme);
         document.documentElement.setAttribute("data-mode", mode);
-      }, [theme, mode]);
+        document.title = (trip.title || "旅行行程") + " · 分享版";
+      }, [theme, mode, trip.title]);
 
       const totalCost = trip.spots.reduce((s, x) => s + (x.cost || 0), 0);
       const totalMins = trip.spots.reduce((s, x) => s + (x.duration || 0), 0);

@@ -130,4 +130,16 @@ function projectToMap(spots) {
   }));
 }
 
-Object.assign(window, { I, PhotoPlaceholder, CategoryChip, WeatherIcon, fmtTime, fmtDur, fmtCost, fmtDate, projectToMap });
+// 把文字中的 http/https 網址轉成 <a> 連結
+function renderLinks(text) {
+  if (!text) return null;
+  const URL_RE = /(https?:\/\/[^\s，。、）\]]+)/g;
+  const parts = text.split(URL_RE);
+  return parts.map((p, i) =>
+    URL_RE.test(p)
+      ? <a key={i} href={p} target="_blank" rel="noreferrer noopener" className="notes-link">[Link]</a>
+      : p
+  );
+}
+
+Object.assign(window, { I, PhotoPlaceholder, CategoryChip, WeatherIcon, fmtTime, fmtDur, fmtCost, fmtDate, projectToMap, renderLinks });

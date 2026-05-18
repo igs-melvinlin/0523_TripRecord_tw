@@ -66,7 +66,6 @@ function Sidebar({ trip, currentDay, setCurrentDay, filters, setFilters, packing
                 <div className="sub">{fmtDate(d.date)}</div>
               </div>
             </div>
-            <div className="w"><WeatherIcon icon={d.weather.icon} /><span className="mono">{d.weather.temp}</span></div>
           </div>
         ))}
       </div>
@@ -197,11 +196,6 @@ function MainTimeline({ trip, currentDay, query, filters, onOpen }) {
           <h2 className="serif">{day.label}<span style={{color:"var(--muted)", marginLeft: 14}}>·</span> <span style={{color:"var(--ink-2)", fontSize: 26}}>{fmtDate(day.date)}</span></h2>
           <div className="date">{visible.length} 個行程 · 共 {Math.round(visible.reduce((s,x)=>s+x.duration,0)/60)} 小時</div>
         </div>
-        <div className="weather">
-          {day.weather && <WeatherIcon icon={day.weather.icon} cls="icon-sm" />}
-          {day.weather?.temp && <span className="t">{day.weather.temp}</span>}
-          {day.weather?.desc && <span style={{color:"var(--muted)"}}>{day.weather.desc}</span>}
-        </div>
       </div>
 
       <div className="timeline">
@@ -305,7 +299,7 @@ function Drawer({ spot, onClose, onEdit, onDelete }) {
               </div>
 
               <div className="section-title" style={{marginTop:0, marginBottom:10}}><span>筆記</span></div>
-              <div className="notes">{spot.notes || "暫無筆記，點下方編輯加入備註。"}</div>
+              <div className="notes">{spot.notes ? renderLinks(spot.notes) : "暫無筆記，點下方編輯加入備註。"}</div>
 
               <div className="drawer-actions">
                 <a className="ctl" href={`detail.html?id=${encodeURIComponent(spot.id)}`} target="_blank" rel="noreferrer">

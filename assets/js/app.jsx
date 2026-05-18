@@ -50,6 +50,7 @@ function App() {
   useEffect(() => {
     window.loadFromSheetCSV(SHEET_CSV_URL)
       .then(spots => {
+        console.log("[TripBook] 載入成功，共", spots.length, "筆：", spots.map(s => s.title));
         setTrip(t => ({ ...t, spots }));
         setCurrentDay(0);
       })

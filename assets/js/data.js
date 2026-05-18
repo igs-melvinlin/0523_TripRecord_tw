@@ -102,10 +102,17 @@ window.loadFromSheetCSV = async function (url) {
   if (!res.ok) throw new Error("讀取失敗：" + res.status);
   const text = await res.text();
   const rows = parseCSV(text);
+  console.log("[TripBook] CSV 解析後共", rows.length, "列（含標頭）");
+  console.log("[TripBook] 標頭：", rows[0]);
+  console.log("[TripBook] 資料列：", rows.slice(1));
   if (rows.length < 2) throw new Error("資料列太少");
   const header = rows[0].map((s) => s.trim().toLowerCase());
   const idx = (k) => header.indexOf(k);
-  const spots = rows.slice(1).filter((r) => r.length > 1 && r[idx("title")]).map((r, i) => ({
+  const spots = rows.slice(1).filter((r) => {
+    const ok = r.length > 1 && r[idx("title")];
+    if (!ok) console.warn("[TripBook] 跳過此列（title 空或欄位不足）：", r);
+    return ok;
+  }).map((r, i) => ({
     id: "imp-" + i,
     date: (r[idx("date")] || "").trim(),
     time: (r[idx("time")] || "09:00").trim(),
